@@ -51,3 +51,44 @@ describe('SweetShop - View Sweets', () => {
     expect(sweets[1].name).toBe('Gajar Halwa');
   });
 });
+
+describe('SweetShop - Search & Sort', () => {
+  let shop;
+
+  beforeEach(() => {
+    shop = new SweetShop();
+    shop.addSweet({ id: 1, name: 'Kaju Katli', category: 'Nut-Based', price: 50, quantity: 20 });
+    shop.addSweet({ id: 2, name: 'Gulab Jamun', category: 'Milk-Based', price: 30, quantity: 10 });
+    shop.addSweet({ id: 3, name: 'Gajar Halwa', category: 'Vegetable-Based', price: 40, quantity: 5 });
+  });
+
+  it('should search sweets by name (case-insensitive)', () => {
+    const result = shop.searchByName('gUlAb');
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Gulab Jamun');
+  });
+
+  it('should search sweets by category (case-insensitive)', () => {
+    const result = shop.searchByCategory('milk-based');
+    expect(result).toHaveLength(1);
+    expect(result[0].category).toBe('Milk-Based');
+  });
+
+  it('should search sweets within a price range', () => {
+    const result = shop.searchByPriceRange(30, 45);
+    expect(result).toHaveLength(2);
+    expect(result.map(s => s.name)).toContain('Gulab Jamun');
+    expect(result.map(s => s.name)).toContain('Gajar Halwa');
+  });
+
+  it('should return sweets sorted by price ascending', () => {
+    const result = shop.sortByPrice();
+    expect(result[0].price).toBe(30);
+    expect(result[2].price).toBe(50);
+  });
+
+  it('should return sweets sorted by name alphabetically', () => {
+    const result = shop.sortByName();
+    expect(result.map(s => s.name)).toEqual(['Gajar Halwa', 'Gulab Jamun', 'Kaju Katli']);
+  });
+});
