@@ -50,4 +50,17 @@ export class SweetShop {
 			a.name.localeCompare(b.name)
 		);
 	}
+
+	purchaseSweet(id, quantity) {
+		const sweet = this.sweets.find(s => s.id === id);
+		if (!sweet) {
+			throw new Error('Sweet with this ID does not exist.');
+		}
+
+		if (sweet.quantity < quantity) {
+			throw new Error('Not enough stock available.');
+		}
+
+		sweet.quantity -= quantity;
+	}
 }
