@@ -92,3 +92,30 @@ describe('SweetShop - Search & Sort', () => {
     expect(result.map(s => s.name)).toEqual(['Gajar Halwa', 'Gulab Jamun', 'Kaju Katli']);
   });
 });
+
+describe('SweetShop - Purchase Sweets', () => {
+  let shop;
+
+  beforeEach(() => {
+    shop = new SweetShop();
+    shop.addSweet({ id: 1, name: 'Gulab Jamun', category: 'Milk-Based', price: 30, quantity: 10 });
+  });
+
+  it('should decrease quantity after purchase', () => {
+    shop.purchaseSweet(1, 3);
+    const sweet = shop.getAllSweets().find(s => s.id === 1);
+    expect(sweet.quantity).toBe(7);
+  });
+
+  it('should throw error if sweet does not exist', () => {
+    expect(() => {
+      shop.purchaseSweet(9999, 2);
+    }).toThrow('Sweet with this ID does not exist.');
+  });
+
+  it('should throw error if not enough stock is available', () => {
+    expect(() => {
+      shop.purchaseSweet(1, 20);
+    }).toThrow('Not enough stock available.');
+  });
+});
