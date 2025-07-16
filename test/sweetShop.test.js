@@ -19,3 +19,21 @@ describe('SweetShop - Add Sweets', () => {
     }).toThrow('Sweet with this ID already exists.');
   });
 });
+
+describe('SweetShop - Delete Sweets', () => {
+  it('should delete a sweet by ID', () => {
+    const shop = new SweetShop();
+    shop.addSweet({ id: 2001, name: 'Gulab Jamun', category: 'Milk-Based', price: 30, quantity: 10 });
+
+    shop.deleteSweet(2001);
+    const sweets = shop.getAllSweets();
+    expect(sweets.length).toBe(0);
+  });
+
+  it('should throw error when trying to delete a non-existing sweet', () => {
+    const shop = new SweetShop();
+    expect(() => {
+      shop.deleteSweet(9999);
+    }).toThrow('Sweet with this ID does not exist.');
+  });
+});
