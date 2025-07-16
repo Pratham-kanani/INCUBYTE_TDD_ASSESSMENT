@@ -22,4 +22,32 @@ export class SweetShop {
     }
     this.sweets.splice(index, 1);
   }
+
+  searchByName(name) {
+  return this.sweets.filter(s =>
+    s.name.toLowerCase().includes(name.toLowerCase())
+  );
+	}
+
+	searchByCategory(category) {
+		return this.sweets.filter(s =>
+			s.category.toLowerCase() === category.toLowerCase()
+		);
+	}
+
+	searchByPriceRange(min, max) {
+		return this.sweets.filter(s =>
+			s.price >= min && s.price <= max
+		);
+	}
+
+	sortByPrice() {
+		return [...this.sweets].sort((a, b) => a.price - b.price);
+	}
+
+	sortByName() {
+		return [...this.sweets].sort((a, b) =>
+			a.name.localeCompare(b.name)
+		);
+	}
 }
