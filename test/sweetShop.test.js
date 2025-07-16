@@ -119,3 +119,24 @@ describe('SweetShop - Purchase Sweets', () => {
     }).toThrow('Not enough stock available.');
   });
 });
+
+describe('SweetShop - Restock Sweets', () => {
+  let shop;
+
+  beforeEach(() => {
+    shop = new SweetShop();
+    shop.addSweet({ id: 1, name: 'Rasgulla', category: 'Milk-Based', price: 25, quantity: 10 });
+  });
+
+  it('should increase quantity when restocked', () => {
+    shop.restockSweet(1, 5);
+    const sweet = shop.getAllSweets().find(s => s.id === 1);
+    expect(sweet.quantity).toBe(15);
+  });
+
+  it('should throw error when restocking a non-existent sweet', () => {
+    expect(() => {
+      shop.restockSweet(9999, 10);
+    }).toThrow('Sweet with this ID does not exist.');
+  });
+});
