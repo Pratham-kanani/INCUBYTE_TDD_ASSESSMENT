@@ -14,4 +14,12 @@ export class SweetShop {
   getAllSweets() {
     return this.sweets;
   }
+
+  deleteSweet(id) {
+    const index = this.sweets.findIndex(s => s.id === id);
+    if (index === -1) {
+      throw new Error('Sweet with this ID does not exist.');
+    }
+    this.sweets.splice(index, 1);
+  }
 }
