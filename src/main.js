@@ -28,7 +28,6 @@ function saveToStorage() {
 }
 
 // Expose for browser event handlers
-// Add sweet from form
 window.addSweet = function () {
   const id = +document.getElementById('id').value;
   const name = document.getElementById('name').value;
@@ -40,44 +39,44 @@ window.addSweet = function () {
     shop.addSweet({ id, name, category, price, quantity });
     clearInputs();
     renderSweets();
+    saveToStorage();
   } catch (err) {
     alert(err.message);
   }
 };
 
-// Delete sweet
 window.deleteSweet = function (id) {
   try {
     shop.deleteSweet(id);
     renderSweets();
+    saveToStorage();
   } catch (err) {
     alert(err.message);
   }
 };
 
-// Purchase sweet
 window.purchaseSweet = function (id) {
   const qty = prompt('Enter quantity to purchase:');
   try {
     shop.purchaseSweet(id, +qty);
     renderSweets();
+    saveToStorage();
   } catch (err) {
     alert(err.message);
   }
 };
 
-// Restock sweet
 window.restockSweet = function (id) {
   const qty = prompt('Enter quantity to restock:');
   try {
     shop.restockSweet(id, +qty);
     renderSweets();
+    saveToStorage();
   } catch (err) {
     alert(err.message);
   }
 };
 
-//Reset the stock
 window.resetShop = function () {
   if (confirm("Reset shop data to default sweets? This will erase all current data.")) {
     localStorage.setItem('sweets', JSON.stringify(defaultSweets));
@@ -85,14 +84,22 @@ window.resetShop = function () {
   }
 };
 
-// Clear input fields
 function clearInputs() {
   ['id', 'name', 'category', 'price', 'quantity'].forEach(id => {
     document.getElementById(id).value = '';
   });
 }
 
-// Render sweets to table
+function getStatusBadge(quantity) {
+  if (quantity === 0) {
+    return '<span class="status-badge status-out-of-stock">Out of Stock</span>';
+  } else if (quantity < 10) {
+    return '<span class="status-badge status-low-stock">Low Stock</span>';
+  } else {
+    return '<span class="status-badge status-in-stock">In Stock</span>';
+  }
+}
+
 window.renderSweets = function () {
   const search = document.getElementById('search').value.toLowerCase();
   const sortBy = document.getElementById('sort').value;
@@ -107,9 +114,20 @@ window.renderSweets = function () {
   // Sort
   if (sortBy === 'price') {
     sweets = [...sweets].sort((a, b) => a.price - b.price);
+  } else if (sortBy === '-price') {
+    sweets = [...sweets].sort((a, b) => b.price - a.price);
   } else if (sortBy === 'name') {
     sweets = [...sweets].sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortBy === '-name') {
+    sweets = [...sweets].sort((a, b) => b.name.localeCompare(a.name));
   }
+
+  // Calculate totals
+  const totalItems = sweets.reduce((sum, sweet) => sum + sweet.quantity, 0);
+  const totalValue = sweets.reduce((sum, sweet) => sum + (sweet.price * sweet.quantity), 0);
+  
+  document.getElementById('total-items').textContent = `${totalItems} items`;
+  document.getElementById('total-value').textContent = `${totalValue.toFixed(2)} total value`;
 
   // Populate table
   const tbody = document.querySelector('#sweet-table tbody');
@@ -121,17 +139,24 @@ window.renderSweets = function () {
       <td>${s.id}</td>
       <td>${s.name}</td>
       <td>${s.category}</td>
-      <td>${s.price}</td>
+      <td>${s.price.toFixed(2)}</td>
       <td>${s.quantity}</td>
+      <td>${getStatusBadge(s.quantity)}</td>
       <td class="action-btns">
-        <button class="btn btn-delete" onclick="deleteSweet(${s.id})">Delete</button>
-        <button class="btn btn-buy" onclick="purchaseSweet(${s.id})">Buy</button>
-        <button class="btn btn-restock" onclick="restockSweet(${s.id})">Restock</button>
+        <button class="btn btn-delete" onclick="deleteSweet(${s.id})">
+          <i class="fas fa-trash-alt"></i> Delete
+        </button>
+        <button class="btn btn-buy" onclick="purchaseSweet(${s.id})">
+          <i class="fas fa-shopping-cart"></i> Buy
+        </button>
+        <button class="btn btn-restock" onclick="restockSweet(${s.id})">
+          <i class="fas fa-boxes"></i> Restock
+        </button>
       </td>
     `;
     tbody.appendChild(row);
   }
 };
 
-//Initial render
+// Initial render
 renderSweets();
